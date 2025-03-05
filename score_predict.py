@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[13]:
-
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,28 +10,17 @@ import keras
 import tensorflow as tf 
 
 
-# In[ ]:
-
-
 ipl = pd.read_csv('ipl_data.csv')
 ipl.head()
-
-
-# In[ ]:
 
 
 #Dropping certain features 
 df = ipl.drop(['date', 'runs', 'wickets', 'overs', 'runs_last_5', 'wickets_last_5','mid', 'striker', 'non-striker'], axis =1)
 
 
-# In[ ]:
-
 
 X = df.drop(['total'], axis =1)
 y = df['total']
-
-
-# In[ ]:
 
 
 #Label Encoding
@@ -55,16 +41,9 @@ X['bowl_team'] = bowling_team_encoder.fit_transform(X['bowl_team'])
 X['batsman'] = striker_encoder.fit_transform(X['batsman'])
 X['bowler'] = bowler_encoder.fit_transform(X['bowler'])
 
-
-# In[ ]:
-
-
 # Train test Split 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
-
-# In[ ]:
 
 
 from sklearn.preprocessing import MinMaxScaler
@@ -74,9 +53,6 @@ scaler = MinMaxScaler()
 # Fit the scaler on the training data and transform both training and testing data
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
-
-
-# In[ ]:
 
 
 # Define the neural network model
@@ -92,21 +68,12 @@ huber_loss = tf.keras.losses.Huber(delta=1.0)  # You can adjust the 'delta' para
 model.compile(optimizer='adam', loss=huber_loss)  # Use Huber loss for regression
 
 
-# In[ ]:
-
-
 # Train the model
 model.fit(X_train_scaled, y_train, epochs=50, batch_size=64, validation_data=(X_test_scaled, y_test))
 
 
-# In[ ]:
-
-
 model_losses = pd.DataFrame(model.history.history)
 model_losses.plot()
-
-
-# In[ ]:
 
 
 # Make predictions
@@ -115,8 +82,6 @@ predictions = model.predict(X_test_scaled)
 from sklearn.metrics import mean_absolute_error,mean_squared_error
 mean_absolute_error(y_test,predictions)
 
-
-# In[ ]:
 
 
 import ipywidgets as widgets
@@ -155,8 +120,6 @@ def predict_score(b):
 
         print(predicted_score)
 
-
-# In[ ]:
 
 
 predict_button.on_click(predict_score)
